@@ -52,13 +52,12 @@ class MultiLabelLoader():
         
         return one_hot
 
-    def shuffle(self):
+    def shuffle(self, data ,label):
         # Would create data-label pair then shuffle it
-        data_label_pair = list(zip(self.data, self.label))
+        data_label_pair = list(zip(train_data, train_label))
         random.shuffle(data_label_pair)
         data, label = list(zip(*data_label_pair))
-        self.data = np.array(data)
-        self.label = np.array(label)
+        return np.array(data), np.array(label)
         
     def load_image(self):
         # Loop through all dir and load image init
@@ -70,24 +69,23 @@ class MultiLabelLoader():
             target_dir_path = os.path.join(self.dir_path, dir_name)
             data.extend(image_process(target_dir_path, self.img_size))
             label.extend([dir_label for _ in range(len(data) - len(label))])
-        self.data = np.array(data) 
-        self.label = np.array(label)
-        self.shuffle()
+        data, label = self.shuffle(data, label)
+        self.split(data, label)
     def __getitem__(self, batch_index: int):
         # Return data and label with given batch index
         start_index = batch_index  * self.batch_size
         end_index = start_index + self.batch_size
-        data = np.array(self.data[start_index: end_index])
-        label = np.array(self.label[start_index: end_index])
+        data = np.array(self.train_data[start_index: end_index])
+        label = np.array(self.train_label[start_index: end_index])
         # Shuffle it when it is the end of the epoch
-        if end_index >= len(self.data):
+        if end_index >= len(self.train_data):
             self.shuffle()
     def __len__(self):
-        return int(len(self.data)/self.batch_size) + min(self.data % self.batch_size, 1)
+        return int(len(self.train_data)/self.batch_size) + min(len(self.train_data) % self.batch_size, 1)
     # Split the data with given ratio 
-    def split(self):
-        train_amount, val_amount, test_amount = [int(ratio * len(self.data)) for ratio in self.split_ratio]
-        self.test_data, self.test_label = self.data[-test_amount:], self.label[-test_amount:]
-        self.val_data, self.val_label = self.data[-val_amount: -test_amount], self.label[-val_amount: -test_amount]
-        self.train_data, self.train_label = self.data[:-val_amount], self.label[:-val_amount]
+    def split(self, data, label):
+        train_amount, val_amount, test_amount = [int(ratio * len(data)) for ratio in self.split_ratio]
+        self.test_data, self.test_label = data[-test_amount:], label[-test_amount:]
+        self.val_data, self.val_label = data[-val_amount: -test_amount], label[-val_amount: -test_amount]
+        self.train_data, self.train_label = data[:-val_amount], label[:-val_amount]
 
