@@ -1,6 +1,7 @@
 import cv2
 import os
 import random
+import tqdm
 def image_process(dir_path: str, img_size: tuple) -> list:
     # dir path would be the path of the directory that contains images
     # img_size is the width and length of the image in tuple
