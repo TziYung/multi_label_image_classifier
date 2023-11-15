@@ -45,7 +45,7 @@ class MultiLabelLoader():
     def get_class(self):
         # Get the name of each class, the name should be a string with no '_' because
         # '_' would be used for directory that two class appear in same image
-        return [class_ for class_ in os.listdir(self.dirpath) if class_.count('_') == 0]
+        return [class_ for class_ in os.listdir(self.dir_path) if class_.count('_') == 0]
     def label_to_onehot(self, labels: list):
         # Convert given label to onehot encoding 
         one_hot = [ 1 if class_ in labels else 0 for class_ in self.class_list]
