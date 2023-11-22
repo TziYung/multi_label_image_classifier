@@ -2,6 +2,7 @@ import cv2
 import os
 import random
 from tqdm.auto import tqdm
+import numpy as np
 def image_process(dir_path: str, img_size: tuple) -> list:
     # dir path would be the path of the directory that contains images
     # img_size is the width and length of the image in tuple
@@ -19,7 +20,7 @@ def image_process(dir_path: str, img_size: tuple) -> list:
         try:
             # read, resize image, and convert image from bgr to rgb due to the reason
             # that opencv read image in the pattern of bgr
-            img = cv2.imread(path)
+            img = cv2.imread(img_path)
             img = cv2.resize(img, img_size)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             processed_images.append(img)
@@ -55,7 +56,7 @@ class MultiLabelLoader():
 
     def shuffle(self, data ,label):
         # Would create data-label pair then shuffle it
-        data_label_pair = list(zip(train_data, train_label))
+        data_label_pair = list(zip(data, label))
         random.shuffle(data_label_pair)
         data, label = list(zip(*data_label_pair))
         return np.array(data), np.array(label)
@@ -80,13 +81,15 @@ class MultiLabelLoader():
         label = np.array(self.train_label[start_index: end_index])
         # Shuffle it when it is the end of the epoch
         if end_index >= len(self.train_data):
-            self.shuffle()
+            self.train_data, self.train_label = self.shuffle(self.train_data, self.train_label)
     def __len__(self):
         return int(len(self.train_data)/self.batch_size) + min(len(self.train_data) % self.batch_size, 1)
     # Split the data with given ratio 
     def split(self, data, label):
+        # if test amount = 0
         train_amount, val_amount, test_amount = [int(ratio * len(data)) for ratio in self.split_ratio]
+        self.train_data, self.train_label = data[:train_amount], label[:train_amount]
+        self.val_data, self.val_label = data[train_amount: train_amount + val_amount], label[train_amount: train_amount + val_amount]
+        # 1 image different
         self.test_data, self.test_label = data[-test_amount:], label[-test_amount:]
-        self.val_data, self.val_label = data[-val_amount: -test_amount], label[-val_amount: -test_amount]
-        self.train_data, self.train_label = data[:-val_amount], label[:-val_amount]
 
