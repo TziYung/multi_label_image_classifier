@@ -7,7 +7,6 @@ import pickle
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--dir", required = True, type = str)
-    ## TODO norm in split_ratio
     parser.add_argument("-r", "--ratio", nargs = 3, default = [ 0.8, 0.2, 0.0], type = int)
     parser.add_argument("-b", "--batch_size", default = 4, type = int)
     args = parser.parse_args()

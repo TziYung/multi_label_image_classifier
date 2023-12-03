@@ -87,9 +87,15 @@ class MultiLabelLoader():
     # Split the data with given ratio 
     def split(self, data, label):
         # if test amount = 0
-        train_amount, val_amount, test_amount = [int(ratio * len(data)) for ratio in self.split_ratio]
+        train_amount, val_amount, test_amount = [int((ratio/sum(self.split_ratio)) * len(data)) for ratio in self.split_ratio]
+        # current_amount is used to assign the left data due to that the amount of data can't be fully divided by given ratio
+        current_amount = sum([train_amount, val_amount, test_amount])
+        # set train, val, test
         self.train_data, self.train_label = data[:train_amount], label[:train_amount]
         self.val_data, self.val_label = data[train_amount: train_amount + val_amount], label[train_amount: train_amount + val_amount]
-        # 1 image different
-        self.test_data, self.test_label = data[-test_amount:], label[-test_amount:]
+        self.test_data, self.test_label = data[current_amount - test_amount: current_amount], label[current_amount - test_amount: current_amount]
+        # If the data can't be fully divided by given ratio, add the rest of the image to train data
+        if current_amount < len(data):
+            self.train_data = np.append(self.train_data, data[current_amount:], axis = 0)
+            self.train_label = np.append(self.train_label, label[current_amount:], axis = 0)
 
