@@ -60,5 +60,5 @@ if __name__ == "__main__":
         patience = 5,
         restore_best_weights = True
     )
-    model.fit(data_loader, epochs = 30, validation_data = (data_loader.val_data, data_loader.val_data), callbacks = [early_stop])
+    model.fit(data_loader.train_data, data_loader.train_label, epochs = 30, validation_data = (data_loader.val_data, data_loader.val_data), callbacks = [early_stop])
     model.save("model.keras")
