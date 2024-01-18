@@ -38,7 +38,8 @@ if __name__ == "__main__":
     # Freeze the weights
     efficient_net.trainable = False
     # Unfreeze the weights to make last few layers trainable
-    for layer in efficient_net.layers[-7:]:
+    # Due to architecture includes a shortcut from first layer to last layer, the whole block have to be turned on or off.
+    for layer in efficient_net.layers[-3:]:
         # Do not train batchnormalization layer
         # The batchnormaliztion get the mean and var from larger data distribution and it serve the purpose of stablizing
         # output of previous layer, shouldn't trian it 
