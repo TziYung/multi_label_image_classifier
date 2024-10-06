@@ -43,7 +43,7 @@ if __name__ == "__main__":
         # Do not train batchnormalization layer
         # The batchnormaliztion get the mean and var from larger data distribution and it serve the purpose of stablizing
         # output of previous layer, shouldn't trian it 
-        if not isinstance(tf.keras.layers, tf.keras.layers.BatchNormalization):
+        if not isinstance(layer, tf.keras.layers.BatchNormalization):
             layer.trainable = True
     
     layer = tf.keras.layers.GlobalAveragePooling2D()(efficient_net.output)
